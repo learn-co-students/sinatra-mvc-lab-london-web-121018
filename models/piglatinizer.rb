@@ -1,27 +1,36 @@
 require 'pry'
 
 class PigLatinizer
-  attr_reader :words
 
-  def initialize(words)
-   @words = words
+  def piglatinize(input_str)
+    input_str.split(" ").length == 1 ? piglatinize_word(input_str) : piglatinize_sentence(input_str)
   end
 
-  def piglatinize(words)
-   words_array = words.split(" ")
+  def consonant?(char)
+    !char.match(/[aAeEiIoOuU]/)
+  end
 
-    words_array.collect do |word|
-     if word.scan(/\A[^aeiouAEIOU]+/).size != 0
-       consonants = word.scan(/\A[^aeiou]+/)
-       letters = consonants.first
-       size = letters.length
+  def piglatinize_word(word)
+    # word starts with vowel
+    if !consonant?(word[0])
+      word = word + "w"
+    # word starts with 3 consonants
+    elsif consonant?(word[0]) && consonant?(word[1]) && consonant?(word[2])
+      word = word.slice(3..-1) + word.slice(0,3)
+    # word starts with 2 consonants
+    elsif consonant?(word[0]) && consonant?(word[1])
+      word = word.slice(2..-1) + word.slice(0,2)
+    # word starts with 1 consonant
+    else
+      word = word.slice(1..-1) + word.slice(0)
+    end
+    word << "ay"
+  end
 
-        "#{word[size..-1]}#{letters}ay"
-     else
-       "#{word}way"
-     end
-   end.join(" ")
- end
+  def piglatinize_sentence(sentence)
+    sentence.split.collect { |word| piglatinize_word(word) }.join(" ")
+  end
+
 
 
   # def initialize(word)
@@ -69,7 +78,7 @@ class PigLatinizer
 
 end
 
-# t1 = PigLatinizer.new("Hello Miguel")
-# t2 = PigLatinizer.new("At")
+# t1 = PigLatinizer.new
+# t2 = PigLatinizer.new
 # binding.pry
 # p 'eof'
